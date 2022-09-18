@@ -1,10 +1,4 @@
 
-fn bits_to_num(bits: Vec<i32>) -> i32 {
-    
-
-
-}
-
 
 
 
