@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -14,17 +15,27 @@ public class Solution {
 
     public Solution(String file_name) {
         this.file_name = file_name;
+        fillScores();
+        fillTranslations();
         readInput();
     }
 
     public void solve() {
-        Integer sum = 0;
+        List<Long> scores = new ArrayList<>();
         for (String line: lines) {
-            sum +=solveLine(line);
+            Long score = solveLine(line);
+            if (score > 0) {
+                scores.add(score);
+            }
         }
+        Collections.sort(scores);
+
+        Integer index = scores.size() / 2;
+
+        System.out.println("middle score is: " + scores.get(index));
     }
 
-    private Integer solveLine(String line) {
+    private Long solveLine(String line) {
 
         Stack<Character> stack = new Stack<>();
 
@@ -37,12 +48,22 @@ public class Solution {
                 if (translations.get(stack.peek()) == myChar) {
                     stack.pop();
                 } else { 
-                    System.out.println("Illegal line with char: " + myChar);
-                    return(scoreMap.get(myChar));
+                    return (long) (0);
                 }
             }
         }
-        return 0;
+        Long score = (long) 0;
+        if (!stack.empty()) {
+            while (!stack.empty()) {
+                Character myChar = stack.pop();
+                score *= 5;
+                score += scoreMap.get(translations.get(myChar));
+            }
+
+            return(score);
+        }
+        
+        return (long) 0;
 
         
     }
@@ -55,10 +76,10 @@ public class Solution {
     }
 
     private void fillScores() {
-        scoreMap.put(')', 3);
-        scoreMap.put(']', 57);
-        scoreMap.put('}', 1197);
-        scoreMap.put('>', 25137);
+        scoreMap.put(')', 1);
+        scoreMap.put(']', 2);
+        scoreMap.put('}', 3);
+        scoreMap.put('>', 4);
     }
 
 
