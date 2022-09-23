@@ -1,22 +1,21 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.constant.DynamicCallSiteDesc;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Solution {
     private String file_name;
     private List<String> lines = new ArrayList<String>();
     private List<List<Integer>> grid = new ArrayList<>();
-    private HashMap<String, int[][]> checkHash = new HashMap<>();
+    private List<List<Integer>> lowPoints = new ArrayList<>();
 
     public Solution(String file_name) {
         this.file_name = file_name;
         read_input();
         parse_input();
-        makeOffsetHash();
     }
 
     private void read_input() {
@@ -42,18 +41,20 @@ public class Solution {
         }
     }
 
-    private void makeOffsetHash() {
-        // left side is x, right side is y
-        checkHash.put("normal", new int[][] { { -1, 1 }, { -1, 1 } });
-        checkHash.put("lefttop", new int[][] { { 1 }, { 1 } });
-        checkHash.put("top", new int[][] { { -1, 1 }, { 1 } });
-        checkHash.put("righttop", new int[][] { { -1 }, { 1 } });
-        checkHash.put("left", new int[][] { { 1 }, { -1, 1 } });
-        checkHash.put("leftbottom", new int[][] { { 1 }, { -1 } });
-        checkHash.put("bottom", new int[][] { { -1, 1 }, { -1 } });
-        checkHash.put("rightbottom", new int[][] { { -1 }, { -1 } });
-        checkHash.put("right", new int[][] { { -1 }, { -1, 1 } });
+    public void solveBasins() {
+        List<Integer> tempPoint = new ArrayList<>();
+        tempPoint.add(2);
+        tempPoint.add(2);
+        List<List<Integer>> dummyPoints = new ArrayList<>();
+        dummyPoints.add(tempPoint);
+        for (List<Integer> point: dummyPoints) {
+            Basin basin = new Basin(point);
+            basin.fillBasin(grid);
+            System.out.println("Basin has size: " + basin.getBasinSize());
+            basin.printBasin(grid);
+        }
     }
+
 
     public void solve() {
         for (int y = 0; y < grid.size(); y++) {
@@ -66,7 +67,7 @@ public class Solution {
                     } else if (x == row.size() - 1) {
                         check(x, y, "righttop");
                     } else {
-                        check(x, y, "upper");
+                        check(x, y, "top");
                     }
                 } else if (y == grid.size() - 1) {
                     if (x == 0) {
@@ -77,30 +78,44 @@ public class Solution {
                         check(x, y, "bottom");
                     }
                 } else if (x == 0) {
-                    check(x, y, "right");
-                } else if (x == row.size() - 1) {
                     check(x, y, "left");
+                } else if (x == row.size() - 1) {
+                    check(x, y, "right");
                 } else {
                     check(x, y, "normal");
                 }
 
             }
         }
+
+
+        Integer sum = 0;
+        for (List<Integer> point: lowPoints) {
+            System.out.println("low point:" + point + "with value" + grid.get(point.get(1)).get(point.get(0)));
+            sum += grid.get(point.get(1)).get(point.get(0)) + 1;
+        }
+        System.out.println("Sum was: " + sum);
     }
 
     private void check(Integer x, Integer y, String location) {
-
-        int[][] xs_ys = checkHash.get(location);
+        
+        System.out.println("location: " + location);
+        System.out.println("x: " + x + " y: " + y);
+        Utils utils = new Utils();
+        int[][] xs_ys = utils.checkHash.get(location);
         int[] xs = xs_ys[0];
         int[] ys = xs_ys[1];
+
+        System.out.println("xs: " + Arrays.toString(xs));
+        System.out.println("ys: " + Arrays.toString(ys));
 
         Integer value = grid.get(y).get(x);
 
         List<Boolean> boolArray = new ArrayList<>();
 
         for (int x_offset : xs) {
-            Integer checkValue = grid.get(y).get(x - x_offset);
-            if (checkValue < value) {
+            Integer checkValue = grid.get(y).get(x + x_offset);
+            if (checkValue > value) {
                 boolArray.add(true);
             } else {
                 boolArray.add(false);
@@ -108,12 +123,17 @@ public class Solution {
         }
 
         for (int y_offset : ys) {
-            Integer checkValue = grid.get(y - y_offset).get(x);
-            if (checkValue < value) {
+            Integer checkValue = grid.get(y + y_offset).get(x);
+            if (checkValue > value) {
                 boolArray.add(true);
             } else {
                 boolArray.add(false);
             }
+        }
+
+        if (!boolArray.contains(false)) {
+            List<Integer> lowPoint = Arrays.asList(x, y);
+            lowPoints.add(lowPoint);
         }
     }
 }
