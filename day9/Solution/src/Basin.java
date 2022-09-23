@@ -26,11 +26,6 @@ public class Basin {
             
         }
 
-        System.out.println("Basin includes: " );
-        for (List<Integer> point: points) {
-            System.out.println("Point x: " + point.get(0) + " y: " + point.get(1));
-            System.out.println("With value: " + grid.get(point.get(1)).get(point.get(0)));
-        }
 
     }
 
@@ -77,7 +72,7 @@ public class Basin {
         for (List<Integer> pointToCheck: pointsToCheck) {
             Boolean inBasin = false;
             for (List<Integer> pointInBasin: points) {
-                if (pointToCheck == pointInBasin) {
+                if (pointToCheck.get(0) == pointInBasin.get(0) && pointToCheck.get(1) == pointInBasin.get(1)) {
                     inBasin = true;
                 }
             }

@@ -1,8 +1,10 @@
+import java.io.Console;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.constant.DynamicCallSiteDesc;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -42,17 +44,22 @@ public class Solution {
     }
 
     public void solveBasins() {
-        List<Integer> tempPoint = new ArrayList<>();
-        tempPoint.add(2);
-        tempPoint.add(2);
-        List<List<Integer>> dummyPoints = new ArrayList<>();
-        dummyPoints.add(tempPoint);
-        for (List<Integer> point: dummyPoints) {
+        List<Integer> basinSize = new ArrayList<>();
+        for (List<Integer> point: lowPoints) {
             Basin basin = new Basin(point);
             basin.fillBasin(grid);
             System.out.println("Basin has size: " + basin.getBasinSize());
-            basin.printBasin(grid);
+            // basin.printBasin(grid);
+            basinSize.add(basin.getBasinSize());
         }
+
+        Collections.sort(basinSize);
+        Collections.reverse(basinSize);
+        Integer product = 1;
+        for (int i = 0; i < 3; i++) {
+            product *= basinSize.get(i);
+        }
+        System.out.println(ConsoleColors.RESET + "Biggest three basins were: " + product);
     }
 
 
