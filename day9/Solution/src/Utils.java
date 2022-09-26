@@ -4,7 +4,7 @@ public class Utils {
 
 
     
-    public HashMap<String, int[][]> checkHash = new HashMap<>();
+    public static HashMap<String, int[][]> checkHash = new HashMap<>();
 
 
     public Utils() {
